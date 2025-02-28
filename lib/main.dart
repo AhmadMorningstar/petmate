@@ -3,7 +3,7 @@ import 'package:petmate/pages/home_page.dart';
 import 'package:petmate/provider/cart_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:petmate/provider/FavsProvider.dart';
-import 'package:petmate/provider/nottification_provider.dart';
+import 'package:petmate/provider/notification_provider.dart';
 
 void main() {
   runApp(
