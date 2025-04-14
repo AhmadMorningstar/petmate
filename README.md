@@ -4,11 +4,11 @@ A new pet shop app with an integrated admin panel using SQLite for authenticatio
 
 ## Overview
 
-This app is designed for pet shop management. It allows admins to log in using SQLite-based authentication, manage purchases, and create new admin users. On app install, the default admin credentials (username: `Admin`, password: `1234`) are added. Admins can create new users from the app and manage notifications related to purchases.
+This app is designed for pet shop management. It allows admins to log in using SQLite-based authentication, manage purchases, and create new admin users. On app install, the default admin credentials (username: `Admin`, password: `Ahmad`) are added. Admins can create new users from the app and manage notifications related to purchases.
 
 ## Features
 
-- Admin login using SQLite (with default credentials: `Admin`, `1234`).
+- Admin login using SQLite (with default credentials: `Admin`, `Ahmad`).
 - Admins can create new user accounts from the app's interface.
 - Persistent admin session after login.
 - A logout button to end the session.
@@ -50,8 +50,8 @@ This app is designed for pet shop management. It allows admins to log in using S
 ### Usage
 
 Upon running the app, you will be greeted with the login screen. If you have not set up any admins, the default credentials are:
-- **Username:** Admin
-- **Password:** 1234
+- **Username:** Ahmad
+- **Password:** Ahmad
 
 Once logged in as an admin, you can:
 - View notifications related to purchases.
@@ -61,14 +61,14 @@ Once logged in as an admin, you can:
 ### Database
 
 - **SQLite:** The app uses the `sqflite` package to store admin user data locally.
-- On app installation, the default admin (`Admin` / `1234`) is added to the database.
+- On app installation, the default admin (`Ahmad` / `Ahmad`) is added to the database.
 - Admins can add additional admin users from the app.
 
 ### Demo
 
 You can quickly test the app with the default admin credentials:
-- **Username:** Admin
-- **Password:** 1234
+- **Username:** Ahmad
+- **Password:** Ahmad
 
 To add more admins, use the "Create New Admin" button on the Admin page.
 
