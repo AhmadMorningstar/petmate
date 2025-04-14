@@ -101,7 +101,6 @@ class _DetailPageState extends State<DetailPage> {
                                 onTap: () {
                                   setState(() {
                                     quantity++;
-
                                   });
                                 },
                                 child: const Icon(Icons.add, color: grey)),
@@ -141,6 +140,7 @@ class _DetailPageState extends State<DetailPage> {
         ),
       ),
 
+      // ✅ Updated Section: Bottom Navigation Bar
       bottomNavigationBar: Container(
         height: 90,
         color: white,
@@ -158,32 +158,34 @@ class _DetailPageState extends State<DetailPage> {
               ),
             ),
             const SizedBox(width: 25),
-            GestureDetector(
-              onTap: isAddedToCart ? null : () { // Disable click when already added
-                setState(() {
-                  isAddedToCart = true;
-                });
-                cartProvider.addCart(widget.product, quantity);
-                isAddedToCart = true;
-
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('Added to cart'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-              },
-              child: Container(
-                padding:
-                const EdgeInsets.symmetric(vertical: 15, horizontal: 80),
-                decoration: BoxDecoration(
-                    color: green, borderRadius: BorderRadius.circular(20)),
-                child: Center(
+            Expanded(
+              child: GestureDetector(
+                onTap: isAddedToCart
+                    ? null
+                    : () {
+                  setState(() {
+                    isAddedToCart = true;
+                  });
+                  cartProvider.addCart(widget.product, quantity);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Added to cart'),
+                      duration: Duration(seconds: 1),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding:
+                  const EdgeInsets.symmetric(vertical: 15, horizontal: 10),
+                  decoration: BoxDecoration(
+                      color: green, borderRadius: BorderRadius.circular(20)),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Icon(Icons.shopping_cart_outlined, color: white),
                       const SizedBox(width: 10),
-                      Text( isAddedToCart ? 'Added to cart' : 'Add to cart',
+                      Text(
+                        isAddedToCart ? 'Added to cart' : 'Add to cart',
                         style: poppin.copyWith(
                             color: white,
                             fontSize: 16,
