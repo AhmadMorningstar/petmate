@@ -5,8 +5,13 @@ import 'package:provider/provider.dart';
 import 'package:petmate/provider/FavsProvider.dart';
 import 'package:petmate/provider/notification_provider.dart';
 import 'package:petmate/provider/admin_provider.dart';
+import 'package:petmate/helpers/db_helper.dart'; // Make sure you import DBHelper
 
-void main() {
+
+void main() async{
+  // Ensure the database is initialized before running the app
+  WidgetsFlutterBinding.ensureInitialized();
+  await DBHelper.database; // This line initializes the DB if it doesn't exist
   runApp(
     MultiProvider(
       providers: [
