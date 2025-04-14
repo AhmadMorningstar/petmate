@@ -37,7 +37,7 @@ class _ProfilePage extends State<ProfilePage> {
           ),
           const SizedBox(height: 10),
           const Text(
-            'John Doe',
+            'Ahmad Morningstar',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
