@@ -41,6 +41,11 @@ This app is designed for pet shop management. It allows admins to log in using S
     ```bash
     flutter run
     ```
+    
+5. Build the app with .apk extension for your preferred device/emulator:
+    ```bash
+    flutter build apk
+    ```
 
 ### Usage
 
