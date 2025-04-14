@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:petmate/provider/notification_provider.dart';
 import 'package:petmate/pages/home_page.dart';
-import 'package:petmate/pages/favs.dart';
-import 'package:petmate/provider/admin_provider.dart';
+import 'package:petmate/helpers/db_helper.dart';
 
 class AdminPage extends StatefulWidget {
   const AdminPage({Key? key}) : super(key: key);
@@ -14,66 +14,155 @@ class AdminPage extends StatefulWidget {
 
 class _NotificationPageState extends State<AdminPage> {
   int selectedPage = 1;
+  bool isLoggedIn = false;
 
   final List<IconData> icons = [Icons.home, Icons.admin_panel_settings_rounded];
   final Color deepPurple = Colors.deepPurple;
   final Color grey = Colors.grey;
   final Color white = Colors.white;
 
-  bool isLoggedIn = false;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? _errorMessage;
 
-  void _login() {
-    const hardcodedUsername = 'Admin';
-    const hardcodedPassword = '1234';
+  @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
 
-    if (_usernameController.text == hardcodedUsername &&
-        _passwordController.text == hardcodedPassword) {
-      setState(() {
-        isLoggedIn = true;
-        _errorMessage = null;
-      });
+  Future<void> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final status = prefs.getBool('isLoggedIn') ?? false;
+    if (status) {
+      setState(() => isLoggedIn = true);
     } else {
-      setState(() {
-        _errorMessage = 'Invalid username or password';
-      });
+      Future.delayed(Duration.zero, _showLoginDialog);
     }
   }
 
-  Widget _buildLoginForm() {
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text('Admin Login', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 20),
-          TextField(
-            controller: _usernameController,
-            decoration: const InputDecoration(labelText: 'Username'),
-          ),
-          const SizedBox(height: 10),
-          TextField(
-            controller: _passwordController,
-            obscureText: true,
-            decoration: const InputDecoration(labelText: 'Password'),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(onPressed: _login, child: const Text('Login')),
-          if (_errorMessage != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+  void _showLoginDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AlertDialog(
+        title: const Text('Admin Login'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: _usernameController,
+              decoration: const InputDecoration(labelText: 'Username'),
             ),
+            TextField(
+              controller: _passwordController,
+              obscureText: true,
+              decoration: const InputDecoration(labelText: 'Password'),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              final username = _usernameController.text.trim();
+              final password = _passwordController.text;
+
+              final isValid = await DBHelper.validateAdmin(username, password);
+
+              if (isValid) {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.setBool('isLoggedIn', true);
+                setState(() => isLoggedIn = true);
+                Navigator.pop(context);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Invalid credentials')),
+                );
+              }
+            },
+            child: const Text('Login'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const HomePage()),
+              );
+            },
+            child: const Text('Cancel'),
+          ),
         ],
       ),
     );
   }
 
+  void _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('isLoggedIn', false);
+    setState(() => isLoggedIn = false);
+    _showLoginDialog();
+  }
+
+  void _showCreateAdminDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Create New Admin"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: _usernameController,
+                decoration: const InputDecoration(labelText: 'Username'),
+              ),
+              TextField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Password'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () async {
+                final username = _usernameController.text;
+                final password = _passwordController.text;
+
+                if (username.isNotEmpty && password.isNotEmpty) {
+                  await DBHelper.insertAdmin(username, password);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Admin created successfully!")),
+                  );
+                  _usernameController.clear();
+                  _passwordController.clear();
+                  Navigator.pop(context);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text("Please fill in both fields")),
+                  );
+                }
+              },
+              child: const Text("Create"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cancel"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (!isLoggedIn) {
+      return const Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -86,12 +175,21 @@ class _NotificationPageState extends State<AdminPage> {
             );
           },
         ),
-        title: const Text("Purchase Panel"),
+        title: GestureDetector(
+          onTap: _logout,
+          child: const Text("Logout", style: TextStyle(color: Colors.red)),
+        ),
+        centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0.5,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: _showCreateAdminDialog,
+          ),
+        ],
       ),
-      body: isLoggedIn
-          ? Consumer<NotificationProvider>(
+      body: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
           if (notificationProvider.notifications.isEmpty) {
             return const Center(
@@ -108,7 +206,6 @@ class _NotificationPageState extends State<AdminPage> {
             itemCount: notificationProvider.notifications.length,
             itemBuilder: (context, index) {
               var notification = notificationProvider.notifications[index];
-
               return Card(
                 margin: const EdgeInsets.only(bottom: 20),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
@@ -126,8 +223,7 @@ class _NotificationPageState extends State<AdminPage> {
             },
           );
         },
-      )
-          : _buildLoginForm(),
+      ),
       bottomNavigationBar: ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(25)),
         child: BottomNavigationBar(
@@ -142,9 +238,7 @@ class _NotificationPageState extends State<AdminPage> {
               setState(() {
                 selectedPage = value;
               });
-
               Widget nextPage = value == 0 ? const HomePage() : const AdminPage();
-
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(builder: (context) => nextPage),
