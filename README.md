@@ -1,6 +1,6 @@
 # PetMate
 
-A new pet shop app with an integrated admin panel using SQLite for authentication.
+A new pet shop app with an integrated admin panel using PostgreSQL for authentication.
 
 ## Overview
 
