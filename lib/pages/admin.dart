@@ -86,6 +86,7 @@ class _AdminScreenState extends State<AdminScreen> {
                 children: [
                   Text('Order ID: ${order['id'] ?? 'N/A'}'),
                   Text('Username: ${order['username'] ?? 'N/A'}'),
+                  Text('Address: ${order['address'] ?? 'N/A'}'),
                   Text('Items: ${order['item_name'] ?? 'N/A'}'),
                   Text('Amount Paid: ${order['amount_paid'] ?? 'N/A'}'),
                   Text('Date: ${order['date_of_purchase'] ?? 'N/A'}'),

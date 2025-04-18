@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:petmate/pages/home_page.dart';
-import 'package:shared_preferences/shared_preferences.dart'; // Import SharedPreferences
-import 'package:petmate/pages/admin.dart'; // Assuming you have an admin page
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:petmate/pages/admin.dart';
 
 class AuthScreen extends StatefulWidget {
   const AuthScreen({Key? key}) : super(key: key);
@@ -13,26 +13,26 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _usernameController = TextEditingController();
-  final _emailController = TextEditingController(); // only used for sign-up
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  final _addressController = TextEditingController(); // New controller for address
   final _supabase = Supabase.instance.client;
 
   bool _isLogin = true;
 
-  // Function to save username to SharedPreferences
   Future<void> _saveUsernameToPrefs(String username) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('username', username); // Store username
+    await prefs.setString('username', username);
   }
 
   Future<void> _auth() async {
     final username = _usernameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
+    final address = _addressController.text; // Get the address
 
     try {
       if (_isLogin) {
-        // Login with username + password for regular users
         final response = await _supabase
             .from('users')
             .select()
@@ -40,21 +40,16 @@ class _AuthScreenState extends State<AuthScreen> {
             .eq('password', password)
             .maybeSingle();
 
-        // LOGIN success for regular users
         if (response != null) {
-          // Save username after successful login
           await _saveUsernameToPrefs(username);
-
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Login successful!')),
           );
-
-          await Future.delayed(const Duration(seconds: 2)); // Reduced delay
-
+          await Future.delayed(const Duration(seconds: 2));
           if (mounted) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const HomePage()), // Navigate to home
+              MaterialPageRoute(builder: (_) => const HomePage()),
             );
           }
         } else {
@@ -63,11 +58,12 @@ class _AuthScreenState extends State<AuthScreen> {
           );
         }
       } else {
-        // Sign Up with username + email + password
+        // Sign Up - Include the address here
         final insertResponse = await _supabase.from('users').insert({
           'username': username,
           'email': email,
           'password': password,
+          'address': address, // Save the address
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -79,6 +75,7 @@ class _AuthScreenState extends State<AuthScreen> {
           _usernameController.clear();
           _emailController.clear();
           _passwordController.clear();
+          _addressController.clear(); // Clear the address field after sign-up
         });
       }
     } catch (e) {
@@ -89,8 +86,8 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _adminSignIn() async {
-    final adminUsername = _usernameController.text; // Use the same username field
-    final adminPassword = _passwordController.text; // Use the same password field
+    final adminUsername = _usernameController.text;
+    final adminPassword = _passwordController.text;
 
     try {
       final response = await _supabase
@@ -104,13 +101,11 @@ class _AuthScreenState extends State<AuthScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Admin login successful!')),
         );
-
-        await Future.delayed(const Duration(seconds: 2)); // Reduced delay
-
+        await Future.delayed(const Duration(seconds: 2));
         if (mounted) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (_) => const AdminScreen()), // Navigate to admin screen
+            MaterialPageRoute(builder: (_) => const AdminScreen()),
           );
         }
       } else {
@@ -145,6 +140,11 @@ class _AuthScreenState extends State<AuthScreen> {
               TextField(
                 controller: _emailController,
                 decoration: const InputDecoration(labelText: 'Email'),
+              ),
+            if (!_isLogin) // Show address field only during sign-up
+              TextField(
+                controller: _addressController,
+                decoration: const InputDecoration(labelText: 'Address'),
               ),
             TextField(
               controller: _passwordController,
