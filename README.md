@@ -69,7 +69,7 @@ Tools • Dart 3.7.0 • DevTools 2.42.2
     
 5. Build the app with .apk extension for your preferred device/emulator:
     ```bash
-    flutter build apk
+    flutter build apk --debug
     ```
 
 ### Usage
