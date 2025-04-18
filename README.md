@@ -4,11 +4,11 @@ A new pet shop app with an integrated admin panel using PostgreSQL for authentic
 
 ## Overview
 
-This app is designed for pet shop management. It allows admins to log in using SQLite-based authentication, manage purchases, and create new admin users. On app install, the default admin credentials (username: `Admin`, password: `Ahmad`) are added. Admins can create new users from the app and manage notifications related to purchases.
+This app is designed for pet shop management. It allows admins to log in using PostgreSQL-based authentication, manage purchases, and create new admin users. On app install, the default admin credentials (username: `Admin`, password: `Ahmad`) are added. Admins can create new users from the app and manage notifications related to purchases.
 
 ## Features
 
-- Admin login using SQLite (with default credentials: `Admin`, `Ahmad`).
+- Admin login using PostgreSQL (with default credentials: `Admin`, `Ahmad`).
 - Admins can create new user accounts from the app's interface.
 - Persistent admin session after login.
 - A logout button to end the session.
@@ -20,7 +20,7 @@ This app is designed for pet shop management. It allows admins to log in using S
 ### Prerequisites
 
 - Ensure you have Flutter installed: [Flutter Installation](https://flutter.dev/docs/get-started/install)
-- SQLite database (`sqflite` package) for storing admin user credentials.
+- PostgreSQL database (`sqflite` package) for storing admin user credentials.
 
 - ### The Version i used to make this
 Android Studio Ladybug Feature Drop | 2024.2.2 Patch 1
@@ -85,7 +85,7 @@ Once logged in as an admin, you can:
 
 ### Database
 
-- **SQLite:** The app uses the `sqflite` package to store admin user data locally.
+- **PostgreSQL:** The app uses the `sqflite` package to store admin user data locally.
 - On app installation, the default admin (`Ahmad` / `Ahmad`) is added to the database.
 - Admins can add additional admin users from the app.
 
