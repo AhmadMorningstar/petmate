@@ -5,6 +5,8 @@ import 'package:petmate/provider/cart_provider.dart';
 import 'package:petmate/widgets/cartItem.dart';
 import 'package:provider/provider.dart';
 import 'package:petmate/provider/notification_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // Import Supabase package
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -192,14 +194,41 @@ class _CartPageState extends State<CartPage> {
                 ),
                 const SizedBox(height: 30),
                 GestureDetector(
-                  onTap: () {
-                    double totalAmount = cartProvider.totalPrice() * 1.1; // Calculate total with tax
+                  onTap: () async {
+                    double totalAmount = cartProvider.totalPrice() * 1.1;
                     NotificationProvider notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
 
-                    // Save checkout details to notifications
                     notificationProvider.addNotification(cartProvider.carts, totalAmount);
 
+                    // Define the function
+                    Future<void> placeOrder(CartProvider cartProvider, double totalAmount) async {
+                      final prefs = await SharedPreferences.getInstance();
+                      final String? username = prefs.getString('username');
 
+                      if (username != null) {
+                        final response = await Supabase.instance.client.from('orders').insert([
+                          {
+                            'username': username, // Insert the username directly
+                            'item_name': cartProvider.carts.map((cart) => cart.product!.name).join(', '),
+                            'amount_paid': totalAmount,
+                            'date_of_purchase': DateTime.now().toIso8601String(),
+                          }
+                        ]);
+
+                        if (response == null) {
+                          print('Order successfully placed');
+                        } else {
+                          print('Error placing order: ${response.error?.message}');
+                        }
+                      } else {
+                        print('Error: Username not found in SharedPreferences');
+                      }
+                    }
+
+                    // ✅ Actually call the function
+                    await placeOrder(cartProvider, totalAmount);
+
+                    // Show confirmation
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text(
@@ -213,34 +242,31 @@ class _CartPageState extends State<CartPage> {
 
                     // Clear cart after 3 seconds
                     Future.delayed(Duration(seconds: 3), () {
-
                       if (cartProvider.carts.isNotEmpty) {
                         for (var cart in List.from(cartProvider.carts)) {
                           cartProvider.remoceCart(cart.id!);
                         }
                       }
-
-
-
                     });
                   },
+
                   child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      color: green,
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Check out',
-                      style: poppin.copyWith(
-                        fontSize: 16,
-                        color: white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
+    height: 50,
+    decoration: BoxDecoration(
+      color: green,
+      borderRadius: BorderRadius.circular(15),
+    ),
+    alignment: Alignment.center,
+    child: Text(
+      'Check out',
+      style: poppin.copyWith(
+        fontSize: 16,
+        color: white,
+        fontWeight: FontWeight.w600,
+      ),
+    ),
+  ),
+),
 
               ],
             ),

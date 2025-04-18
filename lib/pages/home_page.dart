@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:petmate/const.dart';
 import 'package:petmate/models/category_model.dart';
 import 'package:petmate/models/product_model.dart';
-import 'package:petmate/pages/admin.dart';
 import 'package:petmate/pages/cart.dart';
 import 'package:petmate/pages/detail.dart';
 import 'package:petmate/provider/cart_provider.dart';
@@ -16,7 +15,6 @@ import 'package:petmate/pages/notifications.dart';
 import 'package:petmate/pages/home_page.dart';
 import 'package:petmate/provider/FavsProvider.dart';
 import 'package:petmate/pages/profile.dart';
-import 'package:petmate/provider/admin_provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -37,7 +35,6 @@ class _HomePageState extends State<HomePage> {
       Icons.favorite_border_rounded,
       Icons.notifications,
       Icons.person_outline_rounded,
-      Icons.admin_panel_settings_outlined,
   ];
 
   Future<void> getCategory() async {
@@ -353,9 +350,6 @@ class _HomePageState extends State<HomePage> {
                   break;
                 case 3:
                   nextPage = const ProfilePage();
-                  break;
-                case 4:
-                  nextPage = const AdminPage();
                   break;
                 default:
                   nextPage = const HomePage();

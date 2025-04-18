@@ -6,9 +6,16 @@ import 'package:petmate/provider/FavsProvider.dart';
 import 'package:petmate/provider/notification_provider.dart';
 import 'package:petmate/provider/admin_provider.dart';
 import 'package:petmate/helpers/db_helper.dart'; // Make sure you import DBHelper
+import 'package:supabase_flutter/supabase_flutter.dart'; // Import Supabase package
+import 'package:petmate/pages/auth_screen.dart';
 
 
 void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://wksggiecasonqlpnpnmw.supabase.co', // Your Supabase URL
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Indrc2dnaWVjYXNvbnFscG5wbm13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDUwMDE4NDgsImV4cCI6MjA2MDU3Nzg0OH0.T4e595iMNMhqfXxzr5_2IVKVRt-Q8Il-ZuVDPQuFcJo', // Your Supabase anon key
+  );
   // Ensure the database is initialized before running the app
   WidgetsFlutterBinding.ensureInitialized();
   await DBHelper.database; // This line initializes the DB if it doesn't exist
@@ -53,7 +60,7 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         primarySwatch: Colors.blue,
       ),
-      home: const HomePage(),
+      home: const AuthScreen(),
     );
   }
 }

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:petmate/pages/home_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:petmate/pages/auth_screen.dart';
+
 
 
 class ProfilePage extends StatefulWidget {
@@ -21,6 +24,25 @@ class _ProfilePage extends State<ProfilePage> {
   final Color white = Colors.white;
   final Uri googleMapsUrl = Uri.parse("https://maps.app.goo.gl/Q7JtMLLLd7f8KjSy9");
 
+
+  Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('username'); // Remove the saved username to log out
+
+    // Optionally navigate to login screen after logout
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const AuthScreen()), // Replace with login screen or home page
+      );
+    }
+  }
+
+  Future<String?> _getUsernameFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('username');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,9 +58,23 @@ class _ProfilePage extends State<ProfilePage> {
             backgroundImage: AssetImage('assets/pfp.jpg'),
           ),
           const SizedBox(height: 10),
-          const Text(
-            'Ahmad Morningstar',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          FutureBuilder<String?>(
+            future: _getUsernameFromPrefs(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+
+              if (snapshot.hasData) {
+                final username = snapshot.data!;
+                return Text(
+                  username, // Display the username of the logged-in user
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                );
+              } else {
+                return const Text('User not found');
+              }
+            },
           ),
           const SizedBox(height: 20),
           Expanded(
@@ -58,6 +94,12 @@ class _ProfilePage extends State<ProfilePage> {
                   title: const Text('Terms & Conditions'),
                   trailing: const Icon(Icons.arrow_forward_ios),
                   onTap: () => _showDialog(context, 'Terms & Conditions', 'Terms & Conditions\n\n\nEffective Date: 2025\n\n\n1. Introduction\n\n\nThese Terms & Conditions ("Terms") govern your use of this test application ("App"), developed for Gasha Institute. By using the App, you agree to comply with these Terms.\n\n\n2. Purpose of the App\n\n\nThis App is for testing and demonstration purposes only. It is not intended for commercial use, data collection, or official transactions.\n\n\n3. User Responsibilities\n\n\nUsers must not misuse the App for unauthorized activities.\n\n\nThe App may include links to external services (e.g., Google Maps); use of these services is subject to their respective policies.\n\n\nThe App content is provided "as is" without guarantees of accuracy.\n\n\n4. Limitations of Liability\n\n\nGasha Institute is not responsible for any errors, malfunctions, or third-party service disruptions while using this App.\n\n\n5. Changes to These Terms\n\n\nThese Terms may be updated periodically. Continued use of the App constitutes acceptance of any modifications.\n\n\nFor more details, visit: https://gie.gasha.edu.iq\n\n\nCopyright 2025 @ Gasha Institute. All Rights Reserved.'),
+                ),
+                ListTile(
+                  title: const Text('Logout'),
+                  trailing: const Icon(Icons.arrow_forward_ios),
+                  onTap: _logout,
+                  textColor: Colors.red,
                 ),
                 const SizedBox(height: 20),
 
