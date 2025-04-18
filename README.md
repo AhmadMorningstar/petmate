@@ -22,6 +22,31 @@ This app is designed for pet shop management. It allows admins to log in using S
 - Ensure you have Flutter installed: [Flutter Installation](https://flutter.dev/docs/get-started/install)
 - SQLite database (`sqflite` package) for storing admin user credentials.
 
+- ### The Version i used to make this
+Android Studio Ladybug Feature Drop | 2024.2.2 Patch 1
+Build #AI-242.23726.103.2422.13016713, built on February 5, 2025
+Runtime version: 21.0.5+-12932927-b750.29 amd64
+VM: OpenJDK 64-Bit Server VM by JetBrains s.r.o.
+Toolkit: sun.awt.windows.WToolkit
+Windows 11.0
+GC: G1 Young Generation, G1 Concurrent GC, G1 Old Generation
+Memory: 2048M
+Cores: 12
+Registry:
+  ide.experimental.ui=true
+  i18n.locale=
+Non-Bundled Plugins:
+  Dart (242.24931)
+  io.flutter (83.0.3)
+
+```bash
+flutter --version
+```
+Flutter 3.29.0 • channel stable • https://github.com/flutter/flutter.git
+Framework • revision 35c388afb5 (9 weeks ago) • 2025-02-10 12:48:41 -0800
+Engine • revision f73bfc4522
+Tools • Dart 3.7.0 • DevTools 2.42.2
+
 ### Installation
 
 1. Clone the repository:
